@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif+JP:wght@200..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Enhanced Admission Prediction</title>
+  <style>
+    *{
+       margin: 0;
+       padding: 0;
+       box-sizing: border-box;
+       scroll-behavior: smooth; 
+       font-family: "Open Sans", sans-serif;
+    }
+    .spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+    .spinner div {
+      width: 1rem;
+      height: 1rem;
+      margin: 0.2rem;
+      background: #3182ce;
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .spinner div:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .spinner div:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    @keyframes bounce {
+      0%, 80%, 100% {
+        transform: scale(0);
+      }
+      40% {
+        transform: scale(1);
+      }
+    }
+    .active {
+      color: #63b3ed; /* Highlight active link with blue */
+    }
+
+    /* Fixed navbar styles */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .content {
+      padding-top: 80px; /* Adjusted to prevent content from hiding under the navbar */
+    }
+    /* Simple Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #3182ce; /* Blue color for the scrollbar thumb */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #63b3ed; /* Lighter blue when hovering */
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f0f0f0; /* Light background color for the track */
+  border-radius: 10px;
+}
+.form-like div{
+  display: flex;
+  align-items: left;
+  flex-direction: column;
+  gap: 8px;
+}
+  </style>
+</head>
+<body class="bg-gray-900 font-sans leading-normal tracking-normal">
+  <!-- Navbar -->
+  <div class="bg-blue-600 navbar">
+    <div class="max-w-4xl mx-auto p-4 flex justify-between items-center sm:flex-row gap-4 flex-col">
+      <!-- Logo and Text -->
+      <div class="flex items-center space-x-3">
+        <img src="https://niistcse.com/logo.jpeg" alt="Logo" class="h-8 w-8" style="border-radius: 100%;"> <!-- Replace with your logo URL -->
+        <h2 class="text-white text-xl font-semibold">Admission Prediction System</h2>
+      </div>
+      <!-- Navbar Links -->
+      <nav class="gap-8 flex items-center justify-center">
+        <a href="#about" class="text-white hover:text-gray-300 nav-link">About</a>
+        <a href="#prediction" class="text-white hover:text-gray-300 nav-link">Prediction</a>
+        <a href="#contact" class="text-white hover:text-gray-300 nav-link">Contact</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- About Section -->
+    <section id="about" class="bg-gray-900 text-white py-24">
+      <div class="max-w-4xl mx-auto px-6">
+        <h2 class="text-3xl font-bold text-center mb-4">About the Admission Prediction System</h2>
+        <p class="text-gray-500 text-lg text-center mb-6">This system uses machine learning algorithms to predict your chances of being admitted to a college based on several factors, including your grades, extracurricular activities, test scores, attendance, and community service hours.</p>
+        <center><a href="#prediction" class="w-full mt-6 px-4 py-2 bg-[#337F73] text-white text-sm font-medium rounded-lg hover:bg-[#337F73] focus:outline-none focus:ring-2 focus:ring-[#337F73]">Explore APS</a></center>
+        
+      </div>
+      
+    </section>
+
+    <!-- Prediction Section -->
+    <section id="prediction" class="bg-white py-24">
+      
+      <div class="max-w-4xl mx-auto px-6">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Admission Prediction System</h2>
+        <!-- Input Fields -->
+        <div class="space-y-4 form-like">
+          <div>
+            <label for="grade" class="block text-gray-700 font-medium">Academic Performance (%):</label>
+            <input type="number" id="grade" placeholder="Enter Percentage of Grades" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="activities" class="block text-gray-700 font-medium">Activity Involvement (1-10):</label>
+            <input type="number" id="activities" placeholder="Rate Your Activities" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="test_score" class="block text-gray-700 font-medium">Academic Test Results (0-1600):</label>
+            <input type="number" id="test_score" placeholder="Enter Academic Test Score" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="attendance" class="block text-gray-700 font-medium">Academic Attendance (%):</label>
+            <input type="number" id="attendance" placeholder="Enter Attendance Percentage" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="community_service" class="block text-gray-700 font-medium">Volunteering Hours:</label>
+            <input type="number" id="community_service" placeholder="Enter Hours" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+        <button onclick="predict()" class="font-medium w-full mt-6 px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Predict Admission Likelihood
+        </button>
+
+        <!-- Modal -->
+        <div id="modal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+          <div class="bg-white p-6 rounded-lg shadow-lg w-80">
+            <h2 id="modal-title" class="text-xl font-bold text-gray-800 mb-4">Result</h2>
+            <p id="modal-message" class="text-gray-600 mb-6"></p>
+            <button onclick="closeModal()" class="w-full px-4 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600">
+              Close
+            </button>
+          </div>
+        </div>
+
+        <!-- Preloader -->
+        <div id="preloader" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+          <div class="spinner">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      </div>
+
+      <canvas id="admissionGraph" width="600px" height="400" class="mx-auto mt-8 sm:block hidden" style="border: 1px solid rgba(128, 128, 128, 0.25); padding: 32px;"></canvas>
+      <br>
+      <center><p class="text-center text-gray-600 text-sm" style="font-style: italic;">Graph: Admission Graph</p></center>
+
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="bg-gray-900 text-white py-24">
+      <div class="max-w-4xl mx-auto px-6">
+        <h2 class="text-3xl font-bold text-center mb-4">Contact</h2>
+        <p class="text-center text-gray-400 mb-4">For more information or queries, feel free to contact us.</p>
+        <p class="text-center text-gray-400">Email: <a href="mailto:adityayadav20033@gmail.com" class="text-blue-400">adityayadav20033@gmail.com</a></p>
+        <p class="text-center text-gray-400">Developed By Aditya Yadav</p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8">
+      <div class="max-w-4xl mx-auto px-6">
+        <div class="text-center">
+          <h3 class="text-xl font-semibold mb-2">Admission Prediction System</h3>
+          <p class="text-gray-400 mb-4">A machine learning-based tool to predict college admission chances based on grades, activity involvement, academic test results, academic attendance, and volunteering hours            .</p>
+          <div class="text-sm text-gray-500">
+            <p>&copy; 2024 Admission Prediction System. Designed for future students seeking better insights into the admission process.</p>
+            <p>Built with ❤️ and TensorFlow.js</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    async function run() {
+      showPreloader();
+
+      const xs = tf.tensor2d([
+        [85, 8, 1400, 95, 50],
+        [70, 6, 1200, 80, 30],
+        [95, 10, 1500, 99, 100],
+        [60, 4, 1000, 75, 10],
+        [80, 7, 1300, 90, 60]
+      ].map(x => [x[0] / 100, x[1] / 10, x[2] / 1600, x[3] / 100, x[4] / 100]));
+
+      const ys = tf.tensor2d([
+        [1],
+        [0],
+        [1],
+        [0],
+        [1]
+      ]);
+
+      const model = tf.sequential();
+      model.add(tf.layers.dense({ units: 16, inputShape: [5], activation: 'relu' }));
+      model.add(tf.layers.dense({ units: 1, activation: 'sigmoid' }));
+      model.compile({ optimizer: 'adam', loss: 'binaryCrossentropy', metrics: ['accuracy'] });
+
+      await model.fit(xs, ys, { epochs: 200 });
+
+      return model;
+    }
+
+    let model;
+
+    async function predict() {
+  if (!model) {
+    model = await run();
+  }
+
+  const grade = parseFloat(document.getElementById("grade").value) / 100;
+  const activities = parseFloat(document.getElementById("activities").value) / 10;
+  const testScore = parseFloat(document.getElementById("test_score").value) / 1600;
+  const attendance = parseFloat(document.getElementById("attendance").value) / 100;
+  const communityService = parseFloat(document.getElementById("community_service").value) / 100;
+
+  const inputTensor = tf.tensor2d([[grade, activities, testScore, attendance, communityService]]);
+  const prediction = await model.predict(inputTensor);
+  const probability = prediction.dataSync()[0];
+  const percentage = (probability * 100).toFixed(2); // Convert probability to a percentage
+
+  const result = probability >= 0.5
+    ? `You are likely to be admitted! Your admission likelihood is ${percentage}%.`
+    : `You are unlikely to be admitted. Your admission likelihood is ${percentage}%.`;
+
+  showModal(result, percentage);
+  updateGraph(percentage); // Update the graph with the new prediction
+}
+
+function showModal(message, percentage) {
+  document.getElementById('modal-message').innerText = message;
+  document.getElementById('modal').style.display = 'flex';
+  hidePreloader();
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+// Update graph
+function updateGraph(percentage) {
+  const ctx = document.getElementById('admissionGraph').getContext('2d');
+
+  if (window.admissionChart) {
+    // Update the chart data if it already exists
+    window.admissionChart.data.datasets[0].data = [percentage, 50]; // 50% as the threshold
+    window.admissionChart.update();
+  } else {
+    // Create a new bar chart if it doesn't exist
+    window.admissionChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Your Admission Likelihood (%)', 'Threshold (%)'],
+        datasets: [
+          {
+            label: 'Likelihood',
+            data: [percentage, 50], // Admission percentage and threshold
+            backgroundColor: ['#3182ce', '#cbd5e0'], // Blue for prediction, gray for threshold
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false, // No legend needed for this simple bar chart
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100, // Ensure y-axis scales from 0 to 100
+            title: {
+              display: true,
+              text: 'Percentage',
+            },
+          },
+        },
+      },
+    });
+  }
+}
+
+
+
+
+    function showPreloader() {
+      document.getElementById('preloader').style.display = 'flex';
+    }
+
+    function hidePreloader() {
+      document.getElementById('preloader').style.display = 'none';
+    }
+
+    function showModal(message) {
+      document.getElementById('modal-message').innerText = message;
+      document.getElementById('modal').style.display = 'flex';
+      hidePreloader();
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
